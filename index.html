@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shahid Nawaz Khan — Firmware · Hardware · PLC · Apps</title>
+<meta name="description" content="Shahid Nawaz Khan — freelance embedded systems & automation engineer. Firmware (BLE, ESP32, nRF, Zephyr), embedded Linux, PLC industrial control, and companion apps.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:        #0E1713;   /* deep soldermask green-charcoal */
+    --bg-raise:  #14211B;   /* raised card */
+    --line:      #24362C;   /* hairlines */
+    --copper:    #D9A441;   /* ENIG gold / copper accent */
+    --copper-dim:#8A6A2F;
+    --silk:      #E9EFEA;   /* silkscreen white */
+    --silk-dim:  #9DB0A4;   /* muted text */
+    --maxw: 1080px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto}
+    *,*::before,*::after{animation:none!important;transition:none!important}
+  }
+  body{
+    background:var(--bg);
+    color:var(--silk);
+    font-family:"IBM Plex Sans",system-ui,sans-serif;
+    font-size:16.5px;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--copper);color:#10130C}
+  a{color:var(--copper);text-decoration:none}
+  a:hover{text-decoration:underline}
+  a:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--copper);outline-offset:3px;border-radius:2px}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  .mono{font-family:"IBM Plex Mono",monospace}
+
+  /* ---------- Header ---------- */
+  header{
+    position:sticky;top:0;z-index:50;
+    background:rgba(14,23,19,.88);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav{display:flex;align-items:center;justify-content:space-between;height:62px}
+  .logo{font-family:"Chakra Petch",sans-serif;font-weight:700;font-size:1.05rem;letter-spacing:.04em;color:var(--silk)}
+  .logo .dot{color:var(--copper)}
+  nav ul{display:flex;gap:26px;list-style:none}
+  nav a{color:var(--silk-dim);font-size:.92rem;font-weight:500}
+  nav a:hover{color:var(--silk);text-decoration:none}
+  @media(max-width:680px){nav ul{gap:14px}nav a{font-size:.82rem}}
+
+  /* ---------- Hero ---------- */
+  .hero{padding:88px 0 72px;position:relative;overflow:hidden}
+  .eyebrow{
+    font-family:"IBM Plex Mono",monospace;font-size:.8rem;color:var(--copper);
+    letter-spacing:.12em;text-transform:uppercase;margin-bottom:18px;
+  }
+  h1{
+    font-family:"Chakra Petch",sans-serif;font-weight:700;
+    font-size:clamp(2.1rem,5.4vw,3.5rem);line-height:1.12;letter-spacing:-.01em;
+    max-width:20ch;
+  }
+  h1 em{font-style:normal;color:var(--copper)}
+  .hero p.lead{max-width:58ch;color:var(--silk-dim);margin-top:22px;font-size:1.06rem}
+  .hero-cta{margin-top:34px;display:flex;gap:14px;flex-wrap:wrap}
+  .btn{
+    display:inline-block;padding:13px 26px;border-radius:4px;
+    font-weight:600;font-size:.95rem;border:1px solid var(--copper);
+    transition:transform .15s ease, background .15s ease;
+  }
+  .btn-solid{background:var(--copper);color:#13160D}
+  .btn-solid:hover{transform:translateY(-2px);text-decoration:none}
+  .btn-ghost{color:var(--copper)}
+  .btn-ghost:hover{background:rgba(217,164,65,.08);text-decoration:none}
+
+  .spec-strip{
+    margin-top:56px;border:1px solid var(--line);border-radius:6px;
+    background:var(--bg-raise);
+    display:grid;grid-template-columns:repeat(4,1fr);
+  }
+  .spec{padding:18px 22px;border-right:1px solid var(--line)}
+  .spec:last-child{border-right:none}
+  .spec .k{font-family:"IBM Plex Mono",monospace;font-size:.72rem;color:var(--silk-dim);letter-spacing:.1em;text-transform:uppercase}
+  .spec .v{font-family:"Chakra Petch",sans-serif;font-weight:600;font-size:1.02rem;margin-top:4px}
+  @media(max-width:760px){
+    .spec-strip{grid-template-columns:1fr 1fr}
+    .spec:nth-child(2){border-right:none}
+    .spec:nth-child(1),.spec:nth-child(2){border-bottom:1px solid var(--line)}
+  }
+
+  /* ---------- Trace divider ---------- */
+  .trace{display:block;width:100%;height:64px;color:var(--copper-dim);opacity:.85}
+
+  /* ---------- Sections ---------- */
+  section{padding:68px 0}
+  .sec-head{display:flex;align-items:baseline;gap:18px;margin-bottom:40px;flex-wrap:wrap}
+  .sec-head h2{
+    font-family:"Chakra Petch",sans-serif;font-weight:600;
+    font-size:clamp(1.5rem,3vw,2rem);
+  }
+  .sec-head .ref{font-family:"IBM Plex Mono",monospace;font-size:.78rem;color:var(--copper);letter-spacing:.1em}
+
+  /* services */
+  .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+  @media(max-width:920px){.grid-4{grid-template-columns:1fr 1fr}}
+  @media(max-width:540px){.grid-4{grid-template-columns:1fr}}
+  .card{
+    background:var(--bg-raise);border:1px solid var(--line);border-radius:6px;
+    padding:24px;transition:border-color .15s ease, transform .15s ease;
+  }
+  .card:hover{border-color:var(--copper-dim);transform:translateY(-3px)}
+  .card h3{font-family:"Chakra Petch",sans-serif;font-size:1.02rem;font-weight:600;margin-bottom:10px}
+  .card p{color:var(--silk-dim);font-size:.92rem}
+  .pad{
+    width:14px;height:14px;border-radius:50%;
+    border:3px solid var(--copper);background:var(--bg);
+    margin-bottom:16px;
+  }
+
+  /* projects */
+  .proj{
+    border:1px solid var(--line);border-radius:6px;background:var(--bg-raise);
+    padding:30px;margin-bottom:22px;
+    display:grid;grid-template-columns:1fr 250px;gap:30px;
+  }
+  @media(max-width:760px){.proj{grid-template-columns:1fr}}
+  .proj h3{font-family:"Chakra Petch",sans-serif;font-size:1.16rem;font-weight:600;margin-bottom:6px}
+  .proj .client{font-family:"IBM Plex Mono",monospace;font-size:.74rem;color:var(--silk-dim);letter-spacing:.08em;text-transform:uppercase;margin-bottom:16px}
+  .proj dl{display:grid;gap:12px}
+  .proj dt{font-family:"IBM Plex Mono",monospace;font-size:.72rem;color:var(--copper);letter-spacing:.12em;text-transform:uppercase}
+  .proj dd{color:var(--silk-dim);font-size:.94rem;margin-top:2px}
+  .result{
+    align-self:start;
+    border:1px solid var(--copper-dim);border-radius:6px;padding:20px;
+    background:rgba(217,164,65,.05);
+  }
+  .result .k{font-family:"IBM Plex Mono",monospace;font-size:.7rem;color:var(--copper);letter-spacing:.12em;text-transform:uppercase}
+  .result .v{font-family:"Chakra Petch",sans-serif;font-weight:700;font-size:1.5rem;line-height:1.25;margin-top:6px}
+  .result .d{color:var(--silk-dim);font-size:.85rem;margin-top:8px}
+  .tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+  .tag{
+    font-family:"IBM Plex Mono",monospace;font-size:.72rem;
+    border:1px solid var(--line);border-radius:3px;padding:4px 9px;color:var(--silk-dim);
+  }
+  details.more{margin-top:18px;border-top:1px dashed var(--line);padding-top:14px}
+  details.more summary{
+    cursor:pointer;list-style:none;
+    font-family:"IBM Plex Mono",monospace;font-size:.78rem;color:var(--copper);letter-spacing:.08em;
+  }
+  details.more summary::before{content:"+ ";font-weight:600}
+  details.more[open] summary::before{content:"− "}
+  details.more summary::-webkit-details-marker{display:none}
+  details.more ul{margin:12px 0 0 18px;color:var(--silk-dim);font-size:.9rem;display:grid;gap:8px}
+
+  /* skills */
+  .skills{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:680px){.skills{grid-template-columns:1fr}}
+  .skill-group h3{font-family:"Chakra Petch",sans-serif;font-size:.95rem;font-weight:600;color:var(--copper);margin-bottom:12px;letter-spacing:.03em}
+  .skill-group{background:var(--bg-raise);border:1px solid var(--line);border-radius:6px;padding:22px}
+  .skill-group p{font-family:"IBM Plex Mono",monospace;font-size:.85rem;color:var(--silk-dim)}
+
+  /* about + contact */
+  .about-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:40px}
+  @media(max-width:760px){.about-grid{grid-template-columns:1fr}}
+  .about-grid p{color:var(--silk-dim);margin-bottom:14px}
+  .fact-list{list-style:none;display:grid;gap:10px}
+  .fact-list li{display:flex;gap:10px;align-items:baseline;font-size:.93rem;color:var(--silk-dim)}
+  .fact-list li::before{content:"▸";color:var(--copper);font-size:.8rem}
+
+  .contact-box{
+    border:1px solid var(--copper-dim);border-radius:8px;
+    background:linear-gradient(180deg, rgba(217,164,65,.07), rgba(217,164,65,.02));
+    padding:48px 36px;text-align:center;
+  }
+  .contact-box h2{font-family:"Chakra Petch",sans-serif;font-size:clamp(1.5rem,3vw,2rem);margin-bottom:12px}
+  .contact-box p{color:var(--silk-dim);max-width:54ch;margin:0 auto 28px}
+  .contact-links{display:flex;justify-content:center;gap:22px;flex-wrap:wrap;margin-top:26px}
+  .contact-links a{font-family:"IBM Plex Mono",monospace;font-size:.85rem;color:var(--silk-dim)}
+  .contact-links a:hover{color:var(--copper)}
+
+  footer{border-top:1px solid var(--line);padding:26px 0;margin-top:40px}
+  footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+    font-family:"IBM Plex Mono",monospace;font-size:.75rem;color:var(--silk-dim)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <div class="logo">SNK<span class="dot">●</span>ENGINEERING</div>
+    <nav aria-label="Main">
+      <ul>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- ================= HERO ================= -->
+  <section class="hero">
+    <div class="wrap">
+      <p class="eyebrow">// Freelance Embedded &amp; Automation Engineer — Islamabad, Pakistan</p>
+      <h1>From bare-metal firmware to the <em>factory floor</em> — and the app in your pocket.</h1>
+      <p class="lead">
+        I'm <strong style="color:var(--silk)">Shahid Nawaz Khan</strong>. I design firmware, bring up hardware,
+        program PLCs, and build the companion apps that tie it all together — so your product or plant
+        works as one system, delivered by one engineer you can actually reach.
+      </p>
+      <div class="hero-cta">
+        <a class="btn btn-solid" href="#contact">Start a project</a>
+        <a class="btn btn-ghost" href="#projects">See my work</a>
+      </div>
+
+      <div class="spec-strip" role="list" aria-label="Quick facts">
+        <div class="spec" role="listitem"><div class="k">Coverage</div><div class="v">Silicon → Cloud</div></div>
+        <div class="spec" role="listitem"><div class="k">Featured case studies</div><div class="v">6 projects</div></div>
+        <div class="spec" role="listitem"><div class="k">Core stack</div><div class="v">C · Zephyr · ESP-IDF · PLC</div></div>
+        <div class="spec" role="listitem"><div class="k">Availability</div><div class="v">Open to work</div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- signature copper-trace divider -->
+  <div class="wrap" aria-hidden="true">
+    <svg class="trace" viewBox="0 0 1080 64" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+      <path d="M0 32 H180 L210 12 H420 L450 32 H640 L670 52 H880 L910 32 H1080" stroke="currentColor" stroke-width="2"/>
+      <circle cx="210" cy="12" r="5" fill="var(--bg)" stroke="currentColor" stroke-width="3"/>
+      <circle cx="450" cy="32" r="5" fill="var(--bg)" stroke="currentColor" stroke-width="3"/>
+      <circle cx="670" cy="52" r="5" fill="var(--bg)" stroke="currentColor" stroke-width="3"/>
+      <circle cx="910" cy="32" r="5" fill="var(--bg)" stroke="currentColor" stroke-width="3"/>
+    </svg>
+  </div>
+
+  <!-- ================= SERVICES ================= -->
+  <section id="services">
+    <div class="wrap">
+      <div class="sec-head"><span class="ref mono">[01]</span><h2>What I build</h2></div>
+      <div class="grid-4">
+        <div class="card">
+          <div class="pad" aria-hidden="true"></div>
+          <h3>Embedded Firmware</h3>
+          <p>BLE and wireless firmware on Nordic nRF, ESP32, PhyPlus and TI SoCs — Zephyr, ESP-IDF, FreeRTOS, ultra-low-power design, OTA, custom GATT services.</p>
+        </div>
+        <div class="card">
+          <div class="pad" aria-hidden="true"></div>
+          <h3>Embedded Linux &amp; Networking</h3>
+          <p>Raspberry Pi and gateway systems in Python and Go — headless provisioning, multi-WAN failover (Ethernet/WiFi/LTE), encrypted device onboarding.</p>
+        </div>
+        <div class="card">
+          <div class="pad" aria-hidden="true"></div>
+          <h3>PLC &amp; Industrial Automation</h3>
+          <p>Delta PLC programming in structured text — state machines, servo motion sequencing, thermal control, safety interlocks, Modbus TCP integration, HMI design.</p>
+        </div>
+        <div class="card">
+          <div class="pad" aria-hidden="true"></div>
+          <h3>Companion Apps &amp; HMI</h3>
+          <p>Android (Kotlin), Flutter, and Electron + React interfaces that talk to your hardware over BLE, Modbus, or MQTT — multi-language, touch-optimized, production-ready.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PROJECTS ================= -->
+  <section id="projects">
+    <div class="wrap">
+      <div class="sec-head"><span class="ref mono">[02]</span><h2>Selected projects</h2></div>
+
+      <!-- PROJECT 1 -->
+      <article class="proj">
+        <div>
+          <h3>Headless Raspberry Pi Provisioning &amp; Network Failover System</h3>
+          <p class="client">IoT fleet deployment · Python + Go + Kotlin</p>
+          <dl>
+            <div><dt>Problem</dt><dd>Pi-based IoT devices ship with no monitor, keyboard, or known network — getting them online meant editing SD cards by hand, impossible for non-technical users at scale, with no resilient way to manage wired, WiFi, and cellular paths after deployment.</dd></div>
+            <div><dt>Solution</dt><dd>A three-part system: a Python BLE service on the Pi receives WiFi credentials from an Android app over an AES-GCM encrypted channel (key derived from a per-device PIN); a dependency-free Go daemon manages connectivity with Ethernet &gt; WiFi &gt; LTE prioritization, per-interface health probing, and automatic failover; the device self-names from its MAC and disables Bluetooth once provisioned.</dd></div>
+          </dl>
+          <details class="more">
+            <summary>Full technical details</summary>
+            <ul>
+              <li>Application-layer AES-GCM encryption over BLE GATT — secure onboarding without pairing UX</li>
+              <li>Permission-tiered app feature to view interface IPs and reconfigure Ethernet (DHCP/static)</li>
+              <li>All settings live as editable files on the boot partition for fleet-friendly imaging</li>
+              <li>Delivered as modular, documented source with step-by-step flashing guide, Soracom LTE ready</li>
+            </ul>
+          </details>
+          <div class="tags">
+            <span class="tag">Raspberry Pi</span><span class="tag">Python BLE/GATT</span><span class="tag">Go</span>
+            <span class="tag">Kotlin/Android</span><span class="tag">AES-GCM</span><span class="tag">LTE/Soracom</span>
+          </div>
+        </div>
+        <div class="result">
+          <div class="k">Outcome</div>
+          <div class="v">Blank SD → online in minutes</div>
+          <div class="d">Zero peripherals needed. Automatic, instant failover across Ethernet, WiFi and cellular; self-naming, self-securing on boot.</div>
+        </div>
+      </article>
+
+      <!-- PROJECT 2 -->
+      <article class="proj">
+        <div>
+          <h3>BLE Channel Sounding Child-Proximity Locator</h3>
+          <p class="client">Wearable safety device · Nordic nRF54L15 firmware</p>
+          <dl>
+            <div><dt>Problem</dt><dd>Tracker tags based on RSSI only give a vague "near/far" — the goal was a parent unit and child tag with true distance ranging and an instant out-of-range alarm, with no phone, cloud, or GPS dependency.</dd></div>
+            <div><dt>Solution</dt><dd>From-scratch firmware on the nRF54L15 (Zephyr / nRF Connect SDK) using Bluetooth 6 Channel Sounding for phase/time-based ranging — multiple distance estimators (IFFT, phase-slope), tuned external antenna path for ~40 m line-of-sight, a flash-persisted configurable alarm (10–100 m thresholds), and dual-role BLE streaming distance, RSSI, and magnetometer heading to a phone over custom GATT.</dd></div>
+          </dl>
+          <details class="more">
+            <summary>Full technical details</summary>
+            <ul>
+              <li>Full serial shell for live tuning of threshold, ranging interval, antenna, TX power, estimator and buzzer</li>
+              <li>RSSI fallback that works at full BLE range when Channel Sounding drops — implemented via a vendor-specific controller command to work around an unsupported standard HCI command on the nRF54L15</li>
+              <li>LIS3MDL magnetometer heading with figure-8 hard-iron calibration streamed alongside distance</li>
+              <li>Diagnosed and fixed an I²C sensor-detection quirk and radio-time contention between simultaneous BLE roles</li>
+            </ul>
+          </details>
+          <div class="tags">
+            <span class="tag">nRF54L15</span><span class="tag">Zephyr RTOS</span><span class="tag">Bluetooth 6 Channel Sounding</span>
+            <span class="tag">GATT</span><span class="tag">LIS3MDL</span><span class="tag">C</span>
+          </div>
+        </div>
+        <div class="result">
+          <div class="k">Outcome</div>
+          <div class="v">Real-time true ranging</div>
+          <div class="d">Validated from ~1.5 m out to tens of metres, with a reliable distance-threshold alarm and live telemetry to a phone.</div>
+        </div>
+      </article>
+
+      <!-- PROJECT 3 -->
+      <article class="proj">
+        <div>
+          <h3>HeliosNet — Off-Grid LTE Gateway with Mesh &amp; LoRa Bridge</h3>
+          <p class="client">Remote-site connectivity platform · ESP-IDF, 4 firmwares</p>
+          <dl>
+            <div><dt>Problem</dt><dd>Remote sites — farms, field equipment, disaster zones — need internet that survives link failures. Off-the-shelf LTE routers don't fail over gracefully, don't extend reach over low-power radio, and existing mesh/LoRa solutions don't interoperate cleanly.</dd></div>
+            <div><dt>Solution</dt><dd>A four-firmware ESP-IDF platform around a LILYGO T-SIM7600E-H gateway: three-tier WAN failover (Ethernet → LTE → mesh-only) with hysteresis and anti-flap; an auto-discovering ESP-NOW mesh with no hardcoded MACs; a LoRa bridge (SX1262) sharing one wire format with app-level ACK/retry; and an internet forwarding service so battery LoRa nodes hundreds of metres away can reach the web through the gateway's LTE uplink.</dd></div>
+          </dl>
+          <details class="more">
+            <summary>Full technical details</summary>
+            <ul>
+              <li>Live web dashboard: uplink status, battery, peer table, event log</li>
+              <li>Dual-partition OTA with rollback, AES-128-GCM payload encryption, persistent NVS configuration</li>
+              <li>Pure ESP-IDF v5.3.5 (no Arduino); hand-rolled SX1262 driver tuned to Heltec V3.2+ TCXO hardware</li>
+              <li>Vendor-neutral architecture — generic Ethernet WAN, cloud/MQTT phase is additive, not a refactor</li>
+            </ul>
+          </details>
+          <div class="tags">
+            <span class="tag">ESP-IDF</span><span class="tag">ESP32-WROVER / S3</span><span class="tag">SIM7600 LTE</span>
+            <span class="tag">SX1262 LoRa</span><span class="tag">ESP-NOW</span><span class="tag">W5500</span>
+            <span class="tag">PPP/NAT</span><span class="tag">AES-128-GCM</span><span class="tag">OTA</span>
+          </div>
+        </div>
+        <div class="result">
+          <div class="k">Outcome</div>
+          <div class="v">&lt;60 s LTE failover</div>
+          <div class="d">8+ hour soak test with stable uplink and heap, zero reboots. End-to-end LoRa-node-to-internet flow verified; device replacement is a flash + 10-second discovery.</div>
+        </div>
+      </article>
+
+      <!-- PROJECT 4 -->
+      <article class="proj">
+        <div>
+          <h3>Ultra-Low-Power BLE CO₂ Sensor Firmware</h3>
+          <p class="client">Battery-powered air-quality monitor · PhyPlus PHY6252</p>
+          <dl>
+            <div><dt>Problem</dt><dd>A custom Bluetooth CO₂ sensor had to run for months on a single CR2450 coin cell within a strict 75 µA average budget — starting from a bare SDK example with blocking calls, unreachable advertising, no mode switching, and no data persistence.</dd></div>
+            <div><dt>Solution</dt><dd>Complete firmware on the PHY6252: a dual-mode state machine (5-minute background sampling, 5-second live streaming on connection), a non-blocking OSAL sensor pipeline that never stalls the BLE stack, a circular RAM buffer with flash persistence, and a binary GATT sync protocol for efficient historical transfer — plus a hardware BOM error (wrong SHT40 I²C address variant) diagnosed and resolved through systematic debugging.</dd></div>
+          </dl>
+          <details class="more">
+            <summary>Full technical details</summary>
+            <ul>
+              <li>Automatic recovery to background mode on disconnect, error, or power cycle — data integrity preserved</li>
+              <li>STCC4 CO₂ controller interface debugging across the hardware/software boundary</li>
+              <li>Ready for mobile integration via Flutter app</li>
+            </ul>
+          </details>
+          <div class="tags">
+            <span class="tag">PHY6252</span><span class="tag">PHY62XX SDK</span><span class="tag">OSAL</span>
+            <span class="tag">BLE/GATT</span><span class="tag">SHT40 / STCC4</span><span class="tag">Low-power C</span>
+          </div>
+        </div>
+        <div class="result">
+          <div class="k">Outcome</div>
+          <div class="v">&lt;75 µA average</div>
+          <div class="d">Months of runtime on one coin cell, with reliable background monitoring, live streaming, and lossless data sync.</div>
+        </div>
+      </article>
+
+      <!-- PROJECT 5 -->
+      <article class="proj">
+        <div>
+          <h3>Pizzomat v2.0 — Fully Automated Robotic Pizza Kiosk</h3>
+          <p class="client">European food-tech startup · Delta AS228T PLC + Electron HMI</p>
+          <dl>
+            <div><dt>Problem</dt><dd>A self-service kiosk storing 204 pizzas across 12 columns and 17 rows, baking on demand with dual IR ovens, cutting with an 8-blade press, and delivering through dual pickup windows — with zero human intervention, FIFO plus cloud-booked inventory, and six languages. No off-the-shelf solution existed; every layer had to be engineered from scratch.</dd></div>
+            <div><dt>Solution</dt><dd>Two parallel tracks: on the PLC, eight structured-text function blocks in ISPSoft — a 10-state master state machine, 4-channel PWM thermal control with soft-start for IR lamp protection, a unified FIFO/direct-address slot picker, 3-axis servo motion sequencing, cutter safety interlocks, a prioritized alarm manager, and an HMI watchdog. On the customer side, an eight-screen Electron + React touch HMI with six-language i18n, driven live by PLC state over an 80+ register Modbus TCP map.</dd></div>
+          </dl>
+          <details class="more">
+            <summary>Full technical details</summary>
+            <ul>
+              <li>Modbus Map v1.1 served as the single integration contract — handed to three downstream teams (cloud API, payment terminal, mechanical integration) enabling parallel development</li>
+              <li>Screens: advertising loop, language select, pizza selection, booking-code keypad, payment wait, live baking progress with real oven temperatures, delivery confirmation, fault display</li>
+              <li>34 baking profiles (5 hard-coded + 29 OTA-updatable from cloud); architecture ready for EtherCAT servo integration without rework</li>
+              <li>All function blocks verified on the Delta AS200 simulator: state transitions, PWM ramps, FIFO selection, safety interlocks, alarm escalation</li>
+            </ul>
+          </details>
+          <div class="tags">
+            <span class="tag">Delta AS228T</span><span class="tag">ISPSoft ST</span><span class="tag">Modbus TCP</span>
+            <span class="tag">Servo motion</span><span class="tag">Safety interlocks</span><span class="tag">Electron + React</span>
+            <span class="tag">i18n ×6</span>
+          </div>
+        </div>
+        <div class="result">
+          <div class="k">Outcome</div>
+          <div class="v">3 teams unblocked in parallel</div>
+          <div class="d">Simulation-complete control system; the Modbus integration contract let cloud, payment, and mechanical teams build simultaneously.</div>
+        </div>
+      </article>
+
+      <!-- PROJECT 6 -->
+      <article class="proj">
+        <div>
+          <h3>VESC BLE-UART Bridge — Firmware Port to TI CC2540</h3>
+          <p class="client">Open-source motor controller ecosystem · Embedded C on 8051</p>
+          <dl>
+            <div><dt>Problem</dt><dd>VESC Tool's wireless link existed only for ESP32 and nRF52 — no firmware for the cheap, widely available TI CC2540, which uses a completely different proprietary BLE stack and offers just 8KB of RAM.</dd></div>
+            <div><dt>Solution</dt><dd>A complete firmware port implementing a transparent BLE-to-UART bridge: Nordic UART Service with 128-bit UUIDs and proper CCCD handling, interrupt-driven UART at 115200 baud, an event-based OSAL architecture, and careful buffer management within 20-byte BLE MTU and tight memory constraints.</dd></div>
+          </dl>
+          <details class="more">
+            <summary>Full technical details</summary>
+            <ul>
+              <li>GAP peripheral role with optimized advertising and connection parameter negotiation for low latency</li>
+              <li>Dynamic CCCD table allocation and clock division during idle for power efficiency</li>
+              <li>Delivered with documentation, hardware connection guides, a 12-point test validation suite, and LED status indication</li>
+            </ul>
+          </details>
+          <div class="tags">
+            <span class="tag">TI CC2540</span><span class="tag">BLE-CC254x SDK</span><span class="tag">8051 / IAR</span>
+            <span class="tag">GATT / NUS</span><span class="tag">UART</span><span class="tag">Embedded C</span>
+          </div>
+        </div>
+        <div class="result">
+          <div class="k">Outcome</div>
+          <div class="v">50–80% module cost cut</div>
+          <div class="d">Full VESC Tool compatibility on iOS, Android and desktop, with &lt;20 ms telemetry latency — on hardware a fraction of the price of nRF52 modules.</div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ================= SKILLS ================= -->
+  <section id="skills">
+    <div class="wrap">
+      <div class="sec-head"><span class="ref mono">[03]</span><h2>Tools &amp; technologies</h2></div>
+      <div class="skills">
+        <div class="skill-group">
+          <h3>Firmware &amp; RTOS</h3>
+          <p>C / Embedded C · Zephyr RTOS · nRF Connect SDK · ESP-IDF · FreeRTOS · TI OSAL · PHY62XX SDK · BLE-CC254x SDK · OTA &amp; dual-partition rollback · Ultra-low-power design · Bootloaders &amp; NVS/flash persistence</p>
+        </div>
+        <div class="skill-group">
+          <h3>Wireless &amp; Protocols</h3>
+          <p>BLE / GATT service design · Bluetooth 6 Channel Sounding · ESP-NOW mesh · LoRa (SX1262) · LTE (SIM7600, PPP/NAT, Soracom) · Modbus TCP/RTU · MQTT · UART, SPI, I²C · AES-GCM payload encryption</p>
+        </div>
+        <div class="skill-group">
+          <h3>Embedded Linux &amp; Backend</h3>
+          <p>Raspberry Pi · Python (BLE, system services) · Go (network daemons) · Multi-WAN failover &amp; health probing · Headless provisioning · Linux networking · Web dashboards</p>
+        </div>
+        <div class="skill-group">
+          <h3>Automation &amp; Apps</h3>
+          <p>Delta PLC (ISPSoft, Structured Text) · State machines &amp; servo motion sequencing · PWM thermal control · Safety interlocks &amp; alarm management · HMI design · Electron + React · Kotlin/Android · Flutter · i18n</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ABOUT ================= -->
+  <section id="about">
+    <div class="wrap">
+      <div class="sec-head"><span class="ref mono">[04]</span><h2>About me</h2></div>
+      <div class="about-grid">
+        <div>
+          <p>I'm Shahid Nawaz Khan, a freelance embedded systems and automation engineer based in Islamabad, Pakistan. My work spans the full stack of connected products: bare-metal and RTOS firmware on Nordic, Espressif, TI and PhyPlus silicon, embedded Linux gateways in Python and Go, industrial PLC control systems, and the mobile and desktop apps that operate them.</p>
+          <p>What sets my projects apart is end-to-end ownership. I've shipped systems where I wrote the radio firmware, the network failover daemon, the PLC safety logic, and the customer-facing app — so there's no finger-pointing between vendors, and the integration just works. I debug across the hardware/software boundary (including catching BOM errors from firmware behavior), document everything I deliver, and design architectures that survive the next phase without a rewrite.</p>
+        </div>
+        <ul class="fact-list">
+          <li>Firmware · Hardware bring-up · PLC · Apps — one engineer, one contract</li>
+          <li>6 featured case studies from real client work</li>
+          <li>Remote work worldwide (English / Urdu)</li>
+          <li>Clear communication, documented deliverables</li>
+          <li>NDA-friendly — confidential work stays confidential</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CONTACT ================= -->
+  <section id="contact">
+    <div class="wrap">
+      <div class="contact-box">
+        <p class="eyebrow">// Ready when you are</p>
+        <h2>Have a device to build or a machine to automate?</h2>
+        <p>Tell me about your project and I'll reply with questions, a rough technical approach, and an honest estimate.</p>
+        <a class="btn btn-solid" href="mailto:engrr.shahidkhan@gmail.com">engrr.shahidkhan@gmail.com</a>
+        <div class="contact-links">
+          <a href="https://wa.me/923335287690" target="_blank" rel="noopener">WhatsApp: +92 333 5287690</a>
+          <a href="https://www.freelancer.com/u/EngrCodeDreamer" target="_blank" rel="noopener">Freelancer.com</a>
+          <a href="https://www.fiverr.com/s/Gz7yyNL" target="_blank" rel="noopener">Fiverr</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Shahid Nawaz Khan — Embedded &amp; Automation Engineering</span>
+    <span>REV 2.0 · Designed &amp; built end-to-end</span>
+  </div>
+</footer>
+
+</body>
+</html>
