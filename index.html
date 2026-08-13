@@ -223,7 +223,7 @@
 
       <div class="spec-strip" role="list" aria-label="Quick facts">
         <div class="spec" role="listitem"><div class="k">Coverage</div><div class="v">Silicon → Cloud</div></div>
-        <div class="spec" role="listitem"><div class="k">Featured case studies</div><div class="v">6 projects</div></div>
+        <div class="spec" role="listitem"><div class="k">Featured case studies</div><div class="v">7 projects</div></div>
         <div class="spec" role="listitem"><div class="k">Core stack</div><div class="v">C · Zephyr · ESP-IDF · PLC</div></div>
         <div class="spec" role="listitem"><div class="k">Availability</div><div class="v">Open to work</div></div>
       </div>
@@ -454,6 +454,37 @@
           <div class="d">Full VESC Tool compatibility on iOS, Android and desktop, with &lt;20 ms telemetry latency — on hardware a fraction of the price of nRF52 modules.</div>
         </div>
       </article>
+
+      <!-- PROJECT 7 -->
+      <article class="proj">
+        <div>
+          <h3>ESP32-S3 AI Robotic Arm — Vision-Guided Pick-and-Place</h3>
+          <p class="client">6+ DOF robotic arm · ESP32-S3 + camera + Windows AI server</p>
+          <dl>
+            <div><dt>Problem</dt><dd>A 6+ DOF robotic arm with a gripper is normally driven by fixed, pre-taught coordinates — it can't adapt when a target object moves. Real pick-and-place needs the arm to see where an object is and reach for it, but running vision AI and real-time motion control together is too heavy for a microcontroller alone.</dd></div>
+            <div><dt>Solution</dt><dd>A hybrid architecture split by strength. The ESP32-S3 handles camera streaming, real-time control of all six joints and the gripper, and lightweight on-device inference; a Windows application/server runs the heavier object detection, maps detected objects from camera space into arm coordinates, and streams motion commands back over WiFi — closing the loop from "see the object" to "grasp and place it."</dd></div>
+          </dl>
+          <details class="more">
+            <summary>Full technical details</summary>
+            <ul>
+              <li>ESP32-S3 firmware: camera capture/streaming, coordinated multi-servo motion for 6+ DOF, gripper actuation, and WiFi command interface</li>
+              <li>Hybrid AI: fast on-device inference on the S3 plus heavier detection on the PC server — each task runs where it belongs</li>
+              <li>Windows app/server: object detection, pixel-to-arm coordinate mapping, and a control/monitoring interface with live camera view</li>
+              <li>Closed-loop pick-and-place: detect target → compute reach → grasp → place, adapting to object position</li>
+            </ul>
+          </details>
+          <div class="tags">
+            <span class="tag">ESP32-S3</span><span class="tag">Camera / vision</span><span class="tag">AI object detection</span>
+            <span class="tag">Pick-and-place</span><span class="tag">6+ DOF servos</span><span class="tag">Windows app/server</span>
+            <span class="tag">WiFi</span>
+          </div>
+        </div>
+        <div class="result">
+          <div class="k">Outcome</div>
+          <div class="v">Vision-guided grasping</div>
+          <div class="d">The arm detects an object, computes a reach, and picks and places it autonomously — driven from a Windows control &amp; monitoring interface.</div>
+        </div>
+      </article>
     </div>
   </section>
 
@@ -476,7 +507,7 @@
         </div>
         <div class="skill-group">
           <h3>Automation &amp; Apps</h3>
-          <p>Delta PLC (ISPSoft, Structured Text) · State machines &amp; servo motion sequencing · PWM thermal control · Safety interlocks &amp; alarm management · HMI design · Electron + React · Kotlin/Android · Flutter · i18n</p>
+          <p>Delta PLC (ISPSoft, Structured Text) · State machines &amp; servo motion sequencing · Robotic arm control (6+ DOF) · AI vision &amp; pick-and-place · PWM thermal control · Safety interlocks &amp; alarm management · HMI design · Electron + React · Kotlin/Android · Flutter · i18n</p>
         </div>
       </div>
     </div>
@@ -493,7 +524,7 @@
         </div>
         <ul class="fact-list">
           <li>Firmware · Hardware bring-up · PLC · Apps — one engineer, one contract</li>
-          <li>6 featured case studies from real client work</li>
+          <li>7 featured case studies from real client work</li>
           <li>Remote work worldwide (English / Urdu)</li>
           <li>Clear communication, documented deliverables</li>
           <li>NDA-friendly — confidential work stays confidential</li>
